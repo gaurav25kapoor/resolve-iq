@@ -1,0 +1,2 @@
+ALTER TABLE "historical_tickets" ADD COLUMN "source_fields" jsonb DEFAULT '{}'::jsonb NOT NULL;--> statement-breakpoint
+ALTER TABLE "historical_tickets" ADD CONSTRAINT "historical_tickets_client_id_clients_client_id_fk" FOREIGN KEY ("client_id") REFERENCES "public"."clients"("client_id") ON DELETE restrict ON UPDATE no action;

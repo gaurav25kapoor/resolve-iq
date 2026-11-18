@@ -1,0 +1,1385 @@
+{
+  "id": "d72dca16-5308-4028-9ab8-9fc977a94e67",
+  "prevId": "6c0d7580-73a2-443c-8097-9d2bbbe1408d",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.ai_analyses": {
+      "name": "ai_analyses",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "workflow_ticket_id": {
+          "name": "workflow_ticket_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ticket_id": {
+          "name": "ticket_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "retrieval_method": {
+          "name": "retrieval_method",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "similar_tickets_json": {
+          "name": "similar_tickets_json",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "diagnosis_summary": {
+          "name": "diagnosis_summary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "suggested_steps_json": {
+          "name": "suggested_steps_json",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "draft_handoff_json": {
+          "name": "draft_handoff_json",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "confidence_note": {
+          "name": "confidence_note",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_by_user_id": {
+          "name": "created_by_user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ai_analyses_workflow_ticket_id_workflow_tickets_id_fk": {
+          "name": "ai_analyses_workflow_ticket_id_workflow_tickets_id_fk",
+          "tableFrom": "ai_analyses",
+          "tableTo": "workflow_tickets",
+          "columnsFrom": [
+            "workflow_ticket_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "ai_analyses_ticket_id_historical_tickets_ticket_id_fk": {
+          "name": "ai_analyses_ticket_id_historical_tickets_ticket_id_fk",
+          "tableFrom": "ai_analyses",
+          "tableTo": "historical_tickets",
+          "columnsFrom": [
+            "ticket_id"
+          ],
+          "columnsTo": [
+            "ticket_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "ai_analyses_created_by_user_id_app_users_id_fk": {
+          "name": "ai_analyses_created_by_user_id_app_users_id_fk",
+          "tableFrom": "ai_analyses",
+          "tableTo": "app_users",
+          "columnsFrom": [
+            "created_by_user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.app_users": {
+      "name": "app_users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uid": {
+          "name": "uid",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "designation": {
+          "name": "designation",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "agent_alias": {
+          "name": "agent_alias",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "password_hash": {
+          "name": "password_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "has_global_client_access": {
+          "name": "has_global_client_access",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "app_users_uid_unique": {
+          "name": "app_users_uid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uid"
+          ]
+        },
+        "app_users_email_unique": {
+          "name": "app_users_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.audit_logs": {
+      "name": "audit_logs",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "actor_user_id": {
+          "name": "actor_user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "actor_name": {
+          "name": "actor_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "actor_role": {
+          "name": "actor_role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "action_type": {
+          "name": "action_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "entity_type": {
+          "name": "entity_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "entity_id": {
+          "name": "entity_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ticket_id": {
+          "name": "ticket_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "details_json": {
+          "name": "details_json",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "audit_logs_created_idx": {
+          "name": "audit_logs_created_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "audit_logs_ticket_idx": {
+          "name": "audit_logs_ticket_idx",
+          "columns": [
+            {
+              "expression": "ticket_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "audit_logs_actor_user_id_app_users_id_fk": {
+          "name": "audit_logs_actor_user_id_app_users_id_fk",
+          "tableFrom": "audit_logs",
+          "tableTo": "app_users",
+          "columnsFrom": [
+            "actor_user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.checklist_items": {
+      "name": "checklist_items",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "checklist_id": {
+          "name": "checklist_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sort_order": {
+          "name": "sort_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "label": {
+          "name": "label",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "guidance": {
+          "name": "guidance",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_mandatory": {
+          "name": "is_mandatory",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "allow_fail_escalation": {
+          "name": "allow_fail_escalation",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "checklist_items_checklist_id_diagnostic_checklists_id_fk": {
+          "name": "checklist_items_checklist_id_diagnostic_checklists_id_fk",
+          "tableFrom": "checklist_items",
+          "tableTo": "diagnostic_checklists",
+          "columnsFrom": [
+            "checklist_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.clients": {
+      "name": "clients",
+      "schema": "",
+      "columns": {
+        "client_id": {
+          "name": "client_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "client_name": {
+          "name": "client_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "client_tier": {
+          "name": "client_tier",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sla_target_hours": {
+          "name": "sla_target_hours",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 24
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.diagnostic_checklists": {
+      "name": "diagnostic_checklists",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "category": {
+          "name": "category",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_proposed_demo": {
+          "name": "is_proposed_demo",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending_approval'"
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "approved_by_user_id": {
+          "name": "approved_by_user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "approval_notes": {
+          "name": "approval_notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "approved_at": {
+          "name": "approved_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "diagnostic_checklists_approved_by_user_id_app_users_id_fk": {
+          "name": "diagnostic_checklists_approved_by_user_id_app_users_id_fk",
+          "tableFrom": "diagnostic_checklists",
+          "tableTo": "app_users",
+          "columnsFrom": [
+            "approved_by_user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "diagnostic_checklists_category_unique": {
+          "name": "diagnostic_checklists_category_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "category"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.engineering_escalations": {
+      "name": "engineering_escalations",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "workflow_ticket_id": {
+          "name": "workflow_ticket_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ticket_id": {
+          "name": "ticket_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "handoff_number": {
+          "name": "handoff_number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "submitted_by_user_id": {
+          "name": "submitted_by_user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "problem_summary": {
+          "name": "problem_summary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "business_impact": {
+          "name": "business_impact",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expected_behavior": {
+          "name": "expected_behavior",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "actual_behavior": {
+          "name": "actual_behavior",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "steps_performed": {
+          "name": "steps_performed",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "diagnostic_evidence": {
+          "name": "diagnostic_evidence",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'submitted'"
+        },
+        "eng_outcome": {
+          "name": "eng_outcome",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "return_reason": {
+          "name": "return_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "eng_notes": {
+          "name": "eng_notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reviewed_by_user_id": {
+          "name": "reviewed_by_user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "submitted_at": {
+          "name": "submitted_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "reviewed_at": {
+          "name": "reviewed_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "engineering_escalations_workflow_ticket_id_workflow_tickets_id_fk": {
+          "name": "engineering_escalations_workflow_ticket_id_workflow_tickets_id_fk",
+          "tableFrom": "engineering_escalations",
+          "tableTo": "workflow_tickets",
+          "columnsFrom": [
+            "workflow_ticket_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "engineering_escalations_ticket_id_historical_tickets_ticket_id_fk": {
+          "name": "engineering_escalations_ticket_id_historical_tickets_ticket_id_fk",
+          "tableFrom": "engineering_escalations",
+          "tableTo": "historical_tickets",
+          "columnsFrom": [
+            "ticket_id"
+          ],
+          "columnsTo": [
+            "ticket_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "engineering_escalations_submitted_by_user_id_app_users_id_fk": {
+          "name": "engineering_escalations_submitted_by_user_id_app_users_id_fk",
+          "tableFrom": "engineering_escalations",
+          "tableTo": "app_users",
+          "columnsFrom": [
+            "submitted_by_user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "engineering_escalations_reviewed_by_user_id_app_users_id_fk": {
+          "name": "engineering_escalations_reviewed_by_user_id_app_users_id_fk",
+          "tableFrom": "engineering_escalations",
+          "tableTo": "app_users",
+          "columnsFrom": [
+            "reviewed_by_user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.historical_tickets": {
+      "name": "historical_tickets",
+      "schema": "",
+      "columns": {
+        "ticket_id": {
+          "name": "ticket_id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at_raw": {
+          "name": "created_at_raw",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at_ts": {
+          "name": "created_at_ts",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "channel": {
+          "name": "channel",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "client_id": {
+          "name": "client_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "client_name": {
+          "name": "client_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "client_tier": {
+          "name": "client_tier",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category": {
+          "name": "category",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "priority": {
+          "name": "priority",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "assigned_agent": {
+          "name": "assigned_agent",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "first_response_at_raw": {
+          "name": "first_response_at_raw",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "first_response_at_ts": {
+          "name": "first_response_at_ts",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "escalated_to_eng": {
+          "name": "escalated_to_eng",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "eng_ticket_id": {
+          "name": "eng_ticket_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "eng_handoffs": {
+          "name": "eng_handoffs",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "eng_outcome": {
+          "name": "eng_outcome",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "first_closed_at_raw": {
+          "name": "first_closed_at_raw",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "first_closed_at_ts": {
+          "name": "first_closed_at_ts",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "final_closed_at_raw": {
+          "name": "final_closed_at_raw",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "final_closed_at_ts": {
+          "name": "final_closed_at_ts",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reopen_count": {
+          "name": "reopen_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "csat_score": {
+          "name": "csat_score",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "resolution_hours": {
+          "name": "resolution_hours",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "first_response_minutes": {
+          "name": "first_response_minutes",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "search_text": {
+          "name": "search_text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "embedding_json": {
+          "name": "embedding_json",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_fields": {
+          "name": "source_fields",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::jsonb"
+        }
+      },
+      "indexes": {
+        "historical_tickets_category_idx": {
+          "name": "historical_tickets_category_idx",
+          "columns": [
+            {
+              "expression": "category",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "historical_tickets_client_idx": {
+          "name": "historical_tickets_client_idx",
+          "columns": [
+            {
+              "expression": "client_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "historical_tickets_status_idx": {
+          "name": "historical_tickets_status_idx",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "historical_tickets_created_idx": {
+          "name": "historical_tickets_created_idx",
+          "columns": [
+            {
+              "expression": "created_at_ts",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "historical_tickets_client_id_clients_client_id_fk": {
+          "name": "historical_tickets_client_id_clients_client_id_fk",
+          "tableFrom": "historical_tickets",
+          "tableTo": "clients",
+          "columnsFrom": [
+            "client_id"
+          ],
+          "columnsTo": [
+            "client_id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.investigation_check_results": {
+      "name": "investigation_check_results",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "workflow_ticket_id": {
+          "name": "workflow_ticket_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "checklist_item_id": {
+          "name": "checklist_item_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "result": {
+          "name": "result",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "evidence_ref": {
+          "name": "evidence_ref",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "updated_by_user_id": {
+          "name": "updated_by_user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "inv_check_workflow_item_idx": {
+          "name": "inv_check_workflow_item_idx",
+          "columns": [
+            {
+              "expression": "workflow_ticket_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "checklist_item_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "investigation_check_results_workflow_ticket_id_workflow_tickets_id_fk": {
+          "name": "investigation_check_results_workflow_ticket_id_workflow_tickets_id_fk",
+          "tableFrom": "investigation_check_results",
+          "tableTo": "workflow_tickets",
+          "columnsFrom": [
+            "workflow_ticket_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "investigation_check_results_checklist_item_id_checklist_items_id_fk": {
+          "name": "investigation_check_results_checklist_item_id_checklist_items_id_fk",
+          "tableFrom": "investigation_check_results",
+          "tableTo": "checklist_items",
+          "columnsFrom": [
+            "checklist_item_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "investigation_check_results_updated_by_user_id_app_users_id_fk": {
+          "name": "investigation_check_results_updated_by_user_id_app_users_id_fk",
+          "tableFrom": "investigation_check_results",
+          "tableTo": "app_users",
+          "columnsFrom": [
+            "updated_by_user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.user_client_access": {
+      "name": "user_client_access",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "client_id": {
+          "name": "client_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "granted_by_user_id": {
+          "name": "granted_by_user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "user_client_access_user_client_idx": {
+          "name": "user_client_access_user_client_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "client_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "user_client_access_user_id_app_users_id_fk": {
+          "name": "user_client_access_user_id_app_users_id_fk",
+          "tableFrom": "user_client_access",
+          "tableTo": "app_users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "user_client_access_client_id_clients_client_id_fk": {
+          "name": "user_client_access_client_id_clients_client_id_fk",
+          "tableFrom": "user_client_access",
+          "tableTo": "clients",
+          "columnsFrom": [
+            "client_id"
+          ],
+          "columnsTo": [
+            "client_id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "user_client_access_granted_by_user_id_app_users_id_fk": {
+          "name": "user_client_access_granted_by_user_id_app_users_id_fk",
+          "tableFrom": "user_client_access",
+          "tableTo": "app_users",
+          "columnsFrom": [
+            "granted_by_user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.workflow_tickets": {
+      "name": "workflow_tickets",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "ticket_id": {
+          "name": "ticket_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "adopted_by_user_id": {
+          "name": "adopted_by_user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "adopted_at": {
+          "name": "adopted_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "assigned_user_id": {
+          "name": "assigned_user_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "assigned_at": {
+          "name": "assigned_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "investigation_status": {
+          "name": "investigation_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'adopted'"
+        },
+        "investigation_notes": {
+          "name": "investigation_notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "evidence_summary": {
+          "name": "evidence_summary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "evidence_refs": {
+          "name": "evidence_refs",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'[]'::jsonb"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "workflow_tickets_ticket_id_historical_tickets_ticket_id_fk": {
+          "name": "workflow_tickets_ticket_id_historical_tickets_ticket_id_fk",
+          "tableFrom": "workflow_tickets",
+          "tableTo": "historical_tickets",
+          "columnsFrom": [
+            "ticket_id"
+          ],
+          "columnsTo": [
+            "ticket_id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "workflow_tickets_adopted_by_user_id_app_users_id_fk": {
+          "name": "workflow_tickets_adopted_by_user_id_app_users_id_fk",
+          "tableFrom": "workflow_tickets",
+          "tableTo": "app_users",
+          "columnsFrom": [
+            "adopted_by_user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "workflow_tickets_assigned_user_id_app_users_id_fk": {
+          "name": "workflow_tickets_assigned_user_id_app_users_id_fk",
+          "tableFrom": "workflow_tickets",
+          "tableTo": "app_users",
+          "columnsFrom": [
+            "assigned_user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "workflow_tickets_ticket_id_unique": {
+          "name": "workflow_tickets_ticket_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "ticket_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

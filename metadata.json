@@ -1,0 +1,6 @@
+{
+  "name": "ResolveIQ",
+  "description": "AI-powered Support Investigation and Engineering Escalation Intelligence Platform for RideOps.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
