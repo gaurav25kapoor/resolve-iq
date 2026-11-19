@@ -24,7 +24,7 @@ I chose to solve the point where these concerns meet: help L1 agents perform a s
 
 ## 2. My decision and what I built
 
-Within a 72-hour take-home assignment, I deliberately did not attempt to automate the whole support operation. I focused on the investigation-to-handoff boundary because it is narrow enough to implement, observable enough to measure, and directly connected to the 173 recorded insufficient-information and configuration returns.
+Within a 72-hour take-home assignment, I did not attempt to automate the whole support operation. I focused on the investigation-to-handoff boundary because it is practical to implement, observable to measure, and directly connected to the 173 recorded insufficient-information and configuration returns.
 
 ResolveIQ is an investigation and engineering handoff workspace. It keeps the historical ticket dataset as evidence, while storing new actions in separate live workflow tables. The product is intended to make the next investigation step explicit and make an escalation reviewable by someone who did not perform the original troubleshooting.
 
@@ -40,9 +40,9 @@ The user journey is:
 8. When the backend gates are satisfied, the agent submits a structured Engineering handoff covering impact, expected and actual behaviour, steps performed, and diagnostic evidence.
 9. Sandeep reviews the handoff, records an engineering outcome, or returns it to L1 with a mandatory reason. A later handoff is tracked separately.
 
-Each stage has a practical purpose. Adoption and assignment create ownership. The checklist makes category-specific investigation visible. Notes and evidence make the work auditable. Similar-ticket retrieval helps an agent find patterns without treating historical outcomes as a diagnosis. The handoff schema gives Engineering a consistent starting point, while the review step keeps the decision with a human.
+Adoption and assignment create ownership; the checklist makes investigation visible; notes and evidence make the work auditable; retrieval helps an agent find patterns without treating historical outcomes as a diagnosis; and the handoff schema gives Engineering a consistent starting point while keeping the decision with a human.
 
-The implementation includes demo personas for Platform Admin, Support Manager, Engineering Manager, and Support Agents. Role and client-scope checks run on the backend, so the interface is not the security boundary. Proposed checklists are labelled as requiring Operations approval; a support agent cannot submit against an unapproved checklist or an incomplete mandatory checklist.
+The implementation includes Platform Admin, Support Manager, Engineering Manager, and Support Agent personas. Role and client-scope checks run on the backend. Proposed checklists require Operations approval; a support agent cannot submit against an unapproved or incomplete mandatory checklist.
 
 No real application screenshots are included in this case study. The repository contains no verified screenshot set that I could use without creating a misleading representation of the product.
 
@@ -50,33 +50,33 @@ No real application screenshots are included in this case study. The repository 
 
 ## 3. How the solution works
 
-The frontend is React 19 with TypeScript, Tailwind CSS, Recharts, and Lucide icons. An Express and TypeScript server exposes the REST API. PostgreSQL on Render stores both the immutable historical baseline and live ResolveIQ activity, accessed through Drizzle ORM. Authentication supports demo credentials and Firebase-backed Google SSO. Authorization is enforced through role checks and client-level access checks in the API.
+The frontend is React 19 with TypeScript, Tailwind CSS, Recharts, and Lucide icons. Express and TypeScript expose the REST API. PostgreSQL on Render stores the immutable baseline and live activity through Drizzle ORM. Authentication supports demo credentials and Firebase Google SSO; authorization is enforced in the API.
 
-The data model separates `historical_tickets` from `workflow_tickets`, checklist results, AI analyses, engineering escalations, and audit logs. Historical rows preserve the 20 source fields and are never overwritten by workflow actions. A workflow ticket links to a historical ticket; new notes, evidence, checks, handoffs, outcomes, and audit entries live in the live tables. Historical and live analytics are exposed as separate boundaries.
+The data model separates `historical_tickets` from `workflow_tickets`, checklist results, AI analyses, escalations, and audit logs. Historical rows preserve all 20 source fields and are never overwritten. A workflow ticket links to a historical ticket; notes, evidence, checks, handoffs, outcomes, and audit entries live in the live tables. Historical and live analytics remain separate.
 
-The AI path is hybrid and deliberately reviewable:
+The AI path is hybrid and reviewable:
 
 1. The agent submits a ticket investigation request.
-2. Deterministic TF-IDF with unigrams and bigrams scores the historical corpus using category, description, and priority, then selects the top 20 candidates.
-3. If a Gemini API key is available, `gemini-embedding-2` reranks that shortlist by vector cosine similarity and returns the top six matches. Embeddings are cached in PostgreSQL.
-4. The selected historical records provide context: descriptions, categories, priorities, escalation status, outcomes, handoff counts, and resolution times.
-5. `gemini-4-hydrogen` produces structured diagnosis, suggested steps, an uncertainty note, and draft handoff fields.
-6. The agent reviews the result before acting. The UI distinguishes historical facts from AI recommendations.
-7. If Gemini is unavailable, the deterministic TF-IDF path and evidence-based synthesis fallback keep the workflow operational.
+2. Deterministic TF-IDF unigrams/bigrams score category, description, and priority, selecting 20 candidates.
+3. When configured, `gemini-embedding-2` reranks those candidates by cosine similarity and returns six; vectors are cached in PostgreSQL.
+4. The selected records provide descriptions, outcomes, escalation status, handoff counts, and resolution times.
+5. `gemini-4-hydrogen` produces structured diagnosis, suggested steps, uncertainty, and draft handoff fields.
+6. The agent reviews the output; the UI separates historical facts from recommendations.
+7. Without Gemini, deterministic TF-IDF and synthesis fallback keep the workflow operational.
 
-The prompt prohibits invented logs, root causes, or historical investigation transcripts. This is important because the CSV records outcomes, not the missing steps that led to them. AI output is assistance, not verified fact; the agent still has to perform the checks, attach evidence, and satisfy backend validation.
+The prompt prohibits invented logs, root causes, or historical transcripts because the CSV records outcomes, not the missing steps. AI output is assistance, not verified fact; the agent must still perform checks, attach evidence, and satisfy backend validation.
 
-Data integrity was verified against the source CSV and after a second seed run: 1,444 tickets were imported for 191 clients; all 20 source fields matched; there were no source-field mismatches, orphaned client references, duplicate ticket IDs, normalized-field mismatches, or analytics mismatches. The second import produced identical counts. The verification also confirmed 20/20 foreign keys, 23/23 valid indexes, and zero workflow, checklist-result, escalation, AI-analysis, or ticket-linked audit rows after cleanup of the test workflow.
+Data integrity was verified against the CSV and after a second seed run: 1,444 tickets, 191 clients, all 20 source fields, 20/20 foreign keys, and 23/23 indexes matched. There were no orphan references, duplicate IDs, normalized-field or analytics mismatches. The second import was identical, and test cleanup left zero workflow, checklist-result, escalation, AI-analysis, or ticket-linked audit rows.
 
-The API workflow was verified with live authentication and authorization checks. All five demo personas authenticated. Historical analytics returned 1,444 tickets, 191 clients, 486 escalations, 48 open snapshot tickets, and monthly arrivals of 390, 462, and 592. Negative checks returned 403 for unauthorized checklist approval, manager escalation attempts, and a scoped user's out-of-scope ticket. The workflow test exercised adoption, assignment, checklist results, notes, AI analysis, escalation, duplicate prevention, Engineering review, return-to-L1, re-escalation, analytics, and audit logging; its synthetic records were removed afterward. This is API/integration evidence, not a claim of full browser automation: the retained test report records that no interactive browser automation was available for that verification run.
+API verification covered all five demo logins, historical analytics, and 403 responses for unauthorized checklist approval, manager escalation attempts, and an out-of-scope ticket. The workflow test covered adoption, assignment, checks, notes, AI analysis, escalation, duplicate prevention, Engineering review, return-to-L1, re-escalation, analytics, and audit logging; synthetic records were removed. This is API/integration evidence, not full browser automation; the retained test report records that interactive browser automation was unavailable.
 
-Remaining limitations are intentional. The historical dataset has one open snapshot and no investigation transcripts, so it cannot prove backlog movement or the avoidability of every return. The AI quality has not yet been evaluated on a labelled retrieval set. Gemini availability changes the retrieval and synthesis mode. The product currently demonstrates the workflow; it has not yet demonstrated an operational improvement in production.
+Limitations are intentional: one open snapshot cannot prove backlog movement; absent investigation transcripts mean returns are not all assumed avoidable; AI quality has not yet been evaluated on labelled retrieval data; Gemini availability changes the mode; and the product has not demonstrated an operational improvement in production.
 
 <!-- PAGE BREAK -->
 
 ## 4. Measuring success and the next four weeks
 
-The primary success measure should be first-pass Engineering handoff acceptance rate: the proportion of submitted escalations that Engineering can accept for investigation without returning to L1 for missing information or configuration checks. This is more useful than simply counting escalations. A lower escalation count could mean better investigation, but it could also mean under-escalation. Acceptance measures whether the handoff is useful at the point where Engineering receives it.
+The primary success measure should be first-pass Engineering handoff acceptance rate: the share of escalations Engineering can accept without returning them to L1 for missing information or configuration checks. This is more useful than counting escalations, because fewer escalations could also mean under-escalation.
 
 Supporting measures should include:
 
@@ -88,7 +88,7 @@ Supporting measures should include:
 - open-ticket count, tracked as a repeated time series rather than a single snapshot;
 - CSAT coverage and score, reported with missing values kept separate.
 
-The following are proposed targets for a pilot, not achieved results: establish a baseline in Week 1; reduce first-pass returns by 15% relative to that baseline by the end of the pilot; reach 80% checklist completion on eligible escalations; capture a first-action timestamp for at least 95% of Engineering handoffs; and maintain CSAT coverage reporting without imputing blanks. These targets should be revised after the team sees the baseline and the quality of the labelled data.
+These are proposed pilot targets, not achieved results: establish a Week 1 baseline; reduce first-pass returns by 15%; reach 80% checklist completion on eligible escalations; capture a first-action timestamp for at least 95% of handoffs; and report CSAT coverage without imputing blanks. Revise targets after baseline and retrieval-quality review.
 
 ### Four-week plan
 
@@ -100,7 +100,7 @@ The following are proposed targets for a pilot, not achieved results: establish 
 
 **Week 4 — Decision.** Compare pilot results with baseline, review the quality of accepted and returned handoffs, and decide whether to expand, revise, or stop. Expansion should depend on evidence that the workflow improves handoff quality without creating unacceptable checklist overhead.
 
-I deliberately did not build autonomous ticket closure, automatic escalation without human approval, microservices or unnecessary infrastructure, fabricated historical investigation data, or advanced automation before collecting evidence. These omissions are part of the design: the first version should make the decision and its consequences visible before it tries to remove people from the loop.
+I deliberately did not build autonomous closure, escalation without human approval, microservices, fabricated historical investigations, or advanced automation before collecting evidence. The first version makes decisions and consequences visible before removing people from the loop.
 
-ResolveIQ currently solves a concrete process problem: it gives L1 a structured investigation path and gives Engineering a more consistent, auditable handoff. What remains to be proven is whether that structure improves first-pass acceptance, reduces return loops, and helps the open-ticket workload over time. The next four weeks are designed to answer those questions with operational evidence rather than product claims.
+ResolveIQ currently gives L1 a structured investigation path and Engineering a more consistent, auditable handoff. What remains to be proven is whether it improves first-pass acceptance, reduces return loops, and helps the open-ticket workload over time. The four-week plan answers those questions with operational evidence.
 
