@@ -78,17 +78,9 @@ Limitations are intentional: one open snapshot cannot prove backlog movement; ab
 
 The primary success measure should be first-pass Engineering handoff acceptance rate: the share of escalations Engineering can accept without returning them to L1 for missing information or configuration checks. This is more useful than counting escalations, because fewer escalations could also mean under-escalation.
 
-Supporting measures should include:
+Supporting measures are insufficient-information and configuration-return rates; checklist adoption and completion; time to first Engineering action; median resolution time split by escalation; reopened tickets; open-ticket count tracked as a time series; and CSAT coverage and score with missing values kept separate.
 
-- insufficient-information return rate and configuration-return rate;
-- checklist adoption, completion, and mandatory-item completion;
-- time to first Engineering action;
-- median resolution time, split by escalated and non-escalated work;
-- reopened tickets;
-- open-ticket count, tracked as a repeated time series rather than a single snapshot;
-- CSAT coverage and score, reported with missing values kept separate.
-
-These are proposed pilot targets, not achieved results: establish a Week 1 baseline; reduce first-pass returns by 15%; reach 80% checklist completion on eligible escalations; capture a first-action timestamp for at least 95% of handoffs; and report CSAT coverage without imputing blanks. Revise targets after baseline and retrieval-quality review.
+These are proposed, not achieved, pilot targets: establish a Week 1 baseline; reduce first-pass returns by 15%; reach 80% checklist completion; capture first-action timestamps for 95% of handoffs; and report CSAT coverage without imputing blanks. Revise them after baseline review.
 
 ### Four-week plan
 
@@ -100,7 +92,7 @@ These are proposed pilot targets, not achieved results: establish a Week 1 basel
 
 **Week 4 — Decision.** Compare pilot results with baseline, review the quality of accepted and returned handoffs, and decide whether to expand, revise, or stop. Expansion should depend on evidence that the workflow improves handoff quality without creating unacceptable checklist overhead.
 
-I deliberately did not build autonomous closure, escalation without human approval, microservices, fabricated historical investigations, or advanced automation before collecting evidence. The first version makes decisions and consequences visible before removing people from the loop.
+I deliberately did not build autonomous closure, escalation without human approval, microservices, fabricated investigations, or advanced automation before collecting evidence. The first version makes decisions visible before removing people from the loop.
 
-ResolveIQ currently gives L1 a structured investigation path and Engineering a more consistent, auditable handoff. What remains to be proven is whether it improves first-pass acceptance, reduces return loops, and helps the open-ticket workload over time. The four-week plan answers those questions with operational evidence.
+ResolveIQ gives L1 a structured investigation path and Engineering a consistent, auditable handoff. The four-week plan must still prove whether it improves acceptance, reduces return loops, and helps the open-ticket workload.
 
